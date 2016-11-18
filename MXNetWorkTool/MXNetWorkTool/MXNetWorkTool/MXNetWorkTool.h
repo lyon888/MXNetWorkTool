@@ -252,4 +252,31 @@ typedef void(^MXResponseFail)(NSError *error);
                               progress:(MXUploadProgress)progress
                                success:(MXResponseSuccess)success
                                   fail:(MXResponseFail)fail;
+
+/**
+ 
+ 图片(多张)上传接口，若不指定baseurl，可传完整的url
+ 
+ 使用场景：相同字段名时
+ 
+ @param images   图片数组
+ @param url      接口连接
+ @param name     字段参数
+ @param mimeType 文件类型 默认为image/jpeg
+ @param params   参数
+ @param progress 上传进度
+ @param success  成功回调
+ @param fail     失败会掉
+ 
+ @return MXURLSessionTask
+ */
++ (MXURLSessionTask *)uploadWithImages:(NSArray *)images
+                                   url:(NSString *)url
+                                  name:(NSString *)name
+                              mimeType:(NSString *)mimeType
+                            parameters:(NSMutableDictionary *)params
+                              progress:(MXUploadProgress)progress
+                               success:(MXResponseSuccess)success
+                                  fail:(MXResponseFail)fail;
+
 @end

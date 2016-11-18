@@ -317,7 +317,7 @@
 				TargetAttributes = {
 					B1411D511DDCB42B0071AD4E = {
 						CreatedOnToolsVersion = 8.1;
-						DevelopmentTeam = 34F29W6ARY;
+						DevelopmentTeam = SF37794JEV;
 						ProvisioningStyle = Automatic;
 					};
 					B1411D6A1DDCB42B0071AD4E = {
@@ -553,8 +553,9 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				DEVELOPMENT_TEAM = 34F29W6ARY;
+				DEVELOPMENT_TEAM = SF37794JEV;
 				INFOPLIST_FILE = MXNetWorkTool/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = lyoniOS.MXNetWorkTool;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -565,8 +566,9 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				DEVELOPMENT_TEAM = 34F29W6ARY;
+				DEVELOPMENT_TEAM = SF37794JEV;
 				INFOPLIST_FILE = MXNetWorkTool/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = lyoniOS.MXNetWorkTool;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -642,6 +644,7 @@
 				B1411D811DDCB42B0071AD4E /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		B1411D821DDCB42B0071AD4E /* Build configuration list for PBXNativeTarget "MXNetWorkToolTests" */ = {
 			isa = XCConfigurationList;
@@ -650,6 +653,7 @@
 				B1411D841DDCB42B0071AD4E /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		B1411D851DDCB42B0071AD4E /* Build configuration list for PBXNativeTarget "MXNetWorkToolUITests" */ = {
 			isa = XCConfigurationList;
@@ -658,6 +662,7 @@
 				B1411D871DDCB42B0071AD4E /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};

@@ -589,6 +589,99 @@ static inline NSString *cachePath() {
     return session;
 }
 
+/**
+ 上传多张图片
+ 使用场景：相同字段名时
+ */
++ (MXURLSessionTask *)uploadWithImages:(NSArray *)images
+                                   url:(NSString *)url
+                                  name:(NSString *)name
+                              mimeType:(NSString *)mimeType
+                            parameters:(NSMutableDictionary *)params
+                              progress:(MXUploadProgress)progress
+                               success:(MXResponseSuccess)success
+                                  fail:(MXResponseFail)fail {
+    if ([self baseUrl] == nil) {
+        if ([NSURL URLWithString:url] == nil) {
+            MXLog(@"URLString无效，无法生成URL。可能是URL中有中文，请尝试Encode URL");
+            return nil;
+        }
+    } else {
+        if ([NSURL URLWithString:[NSString stringWithFormat:@"%@%@", [self baseUrl], url]] == nil) {
+            MXLog(@"URLString无效，无法生成URL。可能是URL中有中文，请尝试Encode URL");
+            return nil;
+        }
+    }
+    
+    if ([self shouldEncode]) {
+        url = [self encodeUrl:url];
+    }
+    
+    params=[self globalParams:params url:url];
+    
+    NSString *absolute = [self absoluteUrlWithPath:url];
+    
+    AFHTTPSessionManager *manager = [self manager];
+    /*manager.responseSerializer.acceptableContentTypes = [NSSet setWithArray:@[@"application/json",
+     @"text/html",
+     @"text/json",
+     @"text/javascript",
+     @"image/jpeg",
+     @"image/png"]];
+     */
+    MXURLSessionTask *session = [manager POST:absolute parameters:params constructingBodyWithBlock:^(id<AFMultipartFormData>  _Nonnull formData) {
+        
+        NSInteger count = [images count];
+        
+        for (int i = 0; i < count; i++) {
+            
+            UIImage *image = images[i];
+            
+            NSData *imageData = UIImageJPEGRepresentation(image, 0.0001);
+            
+            NSString *imageFileName = nil;
+            
+            NSDateFormatter *formatter = [[NSDateFormatter alloc] init];
+            formatter.dateFormat = @"yyyyMMddHHmmss";
+            NSString *str = [formatter stringFromDate:[NSDate date]];
+            imageFileName = [NSString stringWithFormat:@"%@.jpg", str];
+            
+            // 上传图片，以文件流的格式
+            [formData appendPartWithFileData:imageData name:name fileName:imageFileName mimeType:mimeType];
+        }
+        
+    } progress:^(NSProgress * _Nonnull uploadProgress) {
+        if (progress) {
+            progress(uploadProgress.completedUnitCount, uploadProgress.totalUnitCount);
+        }
+    } success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
+        [[self allTasks] removeObject:task];
+        [self successResponse:responseObject callback:success];
+        
+        if ([self isDebug]) {
+            [self logWithSuccessResponse:responseObject
+                                     url:absolute
+                                  params:params];
+        }
+    } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
+        
+        [[self allTasks] removeObject:task];
+        
+        [self handleCallbackWithError:error fail:fail];
+        
+        if ([self isDebug]) {
+            [self logWithFailError:error url:absolute params:params];
+        }
+    }];
+    
+    [session resume];
+    if (session) {
+        [[self allTasks] addObject:session];
+    }
+    
+    return session;
+}
+
 #pragma mark - Private Method
 
 // 进行缓存操作
