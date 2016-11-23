@@ -6,8 +6,13 @@
 //
 
 #import "MXNetWorkTool.h"
-#import "AFNetworkActivityIndicatorManager.h"
+///</AFNetworking.h>这个文件是否存在.如果存在，能被引入就返回YES，否则返回NO
+#if __has_include(<AFNetworking/AFNetworking.h>)
+#import <AFNetworking/AFNetworking.h>
+#else
 #import "AFNetworking.h"
+#endif
+#import "AFNetworkActivityIndicatorManager.h"
 #import <CommonCrypto/CommonDigest.h>
 
 static NSString *sg_privateNetworkBaseUrl = nil;
@@ -764,18 +769,14 @@ static inline NSString *cachePath() {
     }
 }
 
-#warning \
-1.将请求到的二进制转为json\
-2.将请求到的字符串转json\
-3.将空数据返回
 + (id)tryToParseData:(id)responseData
 {
-    //字符串转Json
+    //1.字符串转JSON
     if ([responseData isKindOfClass:[NSString class]]) {
         
         return [NSJSONSerialization JSONObjectWithData:[((NSString *)responseData) dataUsingEncoding:NSUTF8StringEncoding] options:kNilOptions error:nil];
         
-    }else if ([responseData isKindOfClass:[NSData class]]) {//二进制转Json
+    }else if ([responseData isKindOfClass:[NSData class]]) {//2.二进制转JSON
         
         if (responseData == nil) {
             return responseData;
