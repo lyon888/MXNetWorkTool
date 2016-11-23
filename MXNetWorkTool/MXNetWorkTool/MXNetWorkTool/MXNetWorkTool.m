@@ -2,17 +2,19 @@
 //  MXNetWorkTool.h
 //
 //  Created by lyoniOS on 16/10/31.
-//  Copyright © 2016年 刘智援. All rights reserved.
+//  Copyright © 2016年 lyoniOS. All rights reserved.
 //
 
 #import "MXNetWorkTool.h"
 ///</AFNetworking.h>这个文件是否存在.如果存在，能被引入就返回YES，否则返回NO
 #if __has_include(<AFNetworking/AFNetworking.h>)
 #import <AFNetworking/AFNetworking.h>
+#import <AFNetworkActivityIndicatorManager.h>
 #else
 #import "AFNetworking.h"
-#endif
 #import "AFNetworkActivityIndicatorManager.h"
+#endif
+
 #import <CommonCrypto/CommonDigest.h>
 
 static NSString *sg_privateNetworkBaseUrl = nil;
@@ -24,9 +26,8 @@ static BOOL sg_cachePost = NO;
 static NSDictionary *sg_httpHeaders = nil;
 static NSTimeInterval sg_timeout = 60.0f;
 static BOOL sg_shoulObtainLocalWhenUnconnected = NO;
-static MXNetworkStatus sg_networkStatus = kMXNetworkStatusUnknown;
+static MXNetworkStatus sg_networkStatus = MXNetworkStatusUnknown;
 static NSMutableArray *sg_requestTasks;
-
 
 /**
  默认请求类型和响应类型为JSON:需要跟后台统一,如果后台返回的为文本类型
@@ -41,13 +42,6 @@ static NSMutableArray *sg_requestTasks;
 static MXResponseType sg_responseType = kMXResponseTypeJSON;
 static MXRequestType  sg_requestType  = kMXRequestTypeJSON;
 
-
-
-//[self configRequestType:kMXRequestTypeJSON
-//           responseType:kMXRequestTypeJSON
-//    shouldAutoEncodeUrl:NO
-//callbackOnCancelRequest:YES];
-//
 //[self configRequestType:kMXRequestTypePlainText
 //           responseType:kMXResponseTypeData
 //    shouldAutoEncodeUrl:NO
@@ -144,7 +138,7 @@ static inline NSString *cachePath() {
                             fail:(MXResponseFail)fail {
     return [self _requestWithUrl:url
                     refreshCache:refreshCache
-                       httpMedth:1
+                      httpMethod:MXRequestMethodGet
                           params:params
                         progress:progress
                          success:success
@@ -174,7 +168,7 @@ static inline NSString *cachePath() {
                              fail:(MXResponseFail)fail {
     return [self _requestWithUrl:url
                     refreshCache:refreshCache
-                       httpMedth:2
+                      httpMethod:MXRequestMethodPost
                           params:params
                         progress:progress
                          success:success
@@ -183,7 +177,7 @@ static inline NSString *cachePath() {
 
 + (MXURLSessionTask *)_requestWithUrl:(NSString *)url
                          refreshCache:(BOOL)refreshCache
-                            httpMedth:(NSUInteger)httpMethod
+                           httpMethod:(MXRequestMethod)httpMethod
                                params:(NSMutableDictionary *)params
                              progress:(MXPostProgress)progress
                               success:(MXResponseSuccess)success
@@ -217,43 +211,42 @@ static inline NSString *cachePath() {
     
     MXURLSessionTask *session = nil;
     
-    if (httpMethod == 1) {
+    if (httpMethod == MXRequestMethodGet) {
         
-        if (sg_cacheGet) {
-            if (sg_shoulObtainLocalWhenUnconnected) {//是否取缓存数据
-                if (sg_networkStatus == kMXNetworkStatusNotReachable ||  sg_networkStatus == kMXNetworkStatusUnknown ) {
-                    //                                                id response = [HYBNetworking cahceResponseWithURL:absolute
-                    //                                                                                       parameters:params];
-                    //                                                NSLog(@"response = %@",response);
-                    //                                                if (response) {
-                    //                                                    if (success) {
-                    //                                                        [self successResponse:response callback:success];
-                    //
-                    //                                                        if ([self isDebug]) {
-                    //                                                            [self logWithSuccessResponse:response
-                    //                                                                                     url:absolute
-                    //                                                                                  params:params];
-                    //                                                        }
-                    //                                                    }
-                    //                                                    return nil;
-                    //                                                }
+        if (sg_cacheGet) {//设置Get方式是否取缓存数据
+            if (sg_shoulObtainLocalWhenUnconnected) {//是否从本地取缓存数据
+                if (sg_networkStatus == MXNetworkStatusNotReachable || sg_networkStatus == MXNetworkStatusUnknown ) {//没有网络时
+                    id response = [MXNetWorkTool cahceResponseWithURL:absolute
+                                                           parameters:params];
+                    if (response) {
+                        if (success) {
+                            [self successResponse:response callback:success];
+                            
+                            if ([self isDebug]) {
+                                [self logWithSuccessResponse:response
+                                                         url:absolute
+                                                      params:params];
+                            }
+                        }
+                        return nil;
+                    }
                 }
             }
             if (!refreshCache) {// 获取缓存
-                //                        id response = [HYBNetworking cahceResponseWithURL:absolute
-                //                                                               parameters:params];
-                //                        if (response) {
-                //                            if (success) {
-                //                                [self successResponse:response callback:success];
-                //
-                //                                if ([self isDebug]) {
-                //                                    [self logWithSuccessResponse:response
-                //                                                             url:absolute
-                //                                                          params:params];
-                //                                }
-                //                            }
-                //                            return nil;
-                //                        }
+                id response = [MXNetWorkTool cahceResponseWithURL:absolute
+                                                       parameters:params];
+                if (response) {
+                    if (success) {
+                        [self successResponse:response callback:success];
+                        
+                        if ([self isDebug]) {
+                            [self logWithSuccessResponse:response
+                                                     url:absolute
+                                                  params:params];
+                        }
+                    }
+                    return nil;
+                }
             }
         }
         
@@ -307,10 +300,10 @@ static inline NSString *cachePath() {
             }
         }];
         
-    } else if (httpMethod == 2) {//POST请求
+    } else if (httpMethod == MXRequestMethodPost) {//POST请求
         if (sg_cachePost) {// 获取缓存
             if (sg_shoulObtainLocalWhenUnconnected) {
-                if (sg_networkStatus == kMXNetworkStatusNotReachable ||  sg_networkStatus == kMXNetworkStatusUnknown ) {
+                if (sg_networkStatus == MXNetworkStatusNotReachable ||  sg_networkStatus == MXNetworkStatusUnknown ) {
                     //                            id response = [HYBNetworking cahceResponseWithURL:absolute
                     //                                                                   parameters:params];
                     //                            if (response) {
@@ -547,20 +540,20 @@ static inline NSString *cachePath() {
             [formData appendPartWithFileData:imageData name:key fileName:imageFileName mimeType:mimeType];
         }
         
-//        for (int i = 0; i < count; i++) {
-//            
-//            UIImage *image = images[i];
-//            
-//            NSData *imageData = UIImageJPEGRepresentation(image, 0.0001);
-//            
-//            NSDateFormatter *formatter = [[NSDateFormatter alloc] init];
-//            formatter.dateFormat = @"yyyyMMddHHmmss";
-//            NSString *str = [formatter stringFromDate:[NSDate date]];
-//            imageFileName = [NSString stringWithFormat:@"%@.jpg", str];
-//            
-//            // 上传图片，以文件流的格式
-//            [formData appendPartWithFileData:imageData name:name fileName:imageFileName mimeType:mimeType];
-//        }
+        //        for (int i = 0; i < count; i++) {
+        //
+        //            UIImage *image = images[i];
+        //
+        //            NSData *imageData = UIImageJPEGRepresentation(image, 0.0001);
+        //
+        //            NSDateFormatter *formatter = [[NSDateFormatter alloc] init];
+        //            formatter.dateFormat = @"yyyyMMddHHmmss";
+        //            NSString *str = [formatter stringFromDate:[NSDate date]];
+        //            imageFileName = [NSString stringWithFormat:@"%@.jpg", str];
+        //
+        //            // 上传图片，以文件流的格式
+        //            [formData appendPartWithFileData:imageData name:name fileName:imageFileName mimeType:mimeType];
+        //        }
         
     } progress:^(NSProgress * _Nonnull uploadProgress) {
         if (progress) {
@@ -927,9 +920,7 @@ static inline NSString *cachePath() {
     }
     
     return url.length == 0 ? queries : url;
-    
 }
-
 
 /**该方法用来处理传入的URL：*/
 + (NSString *)absoluteUrlWithPath:(NSString *)path
@@ -983,16 +974,15 @@ static inline NSString *cachePath() {
     
 }
 
-#pragma mark - 智汇所全局参数
+#pragma mark - 拼接全局参数(自定义修改)
 //拼接全局参数  打印URL
 + (NSMutableDictionary *)globalParams:(NSMutableDictionary *)params url:(NSString *)url
 {
     if (params) {
-        //先判断是非存在着user_id
-        if ([[params allKeys] containsObject:@"token"]) {
-            MXLog(@"token已存在 不用追加");
+        //先判断参数是否存在
+        if ([[params allKeys] containsObject:@""]) {
+            MXLog(@"参数已存在 不用追加");
         } else {
-            
             //统一追加全局参数
             //NSString *userId=[[NSUserDefaults standardUserDefaults] objectForKey:kUserId];
             //            SharedPreferences *spf=[SharedPreferences shareInstance];
@@ -1000,7 +990,7 @@ static inline NSString *cachePath() {
             //            if (!userId) {
             //                userId=@"0";
             //            }
-//            [params setObject:[NSString otherToken] forKey:@"token"];
+            //            [params setObject:[NSString otherToken] forKey:@"token"];
             MXLog(@"追加 token 参数");
         }
         //        NSTimeInterval timestamp=[[NSDate date] timeIntervalSince1970]*1000;//毫秒
@@ -1011,24 +1001,23 @@ static inline NSString *cachePath() {
         //        [params setObject:sign forKey:@"sign"];
     }
     
-    
     //拼接链接
-    //    if ([self isDebug]) {
-    //        NSMutableString *urlString=[[NSMutableString alloc] init];
-    //        if (![url hasPrefix:@"http://"]&&![url hasPrefix:@"https://"]) {
-    //            [urlString appendString:[self baseUrl]];
-    //        }
-    //        [urlString appendString:url];
-    //        [urlString appendString:@"?"];
-    //        for (NSString *key in params) {
-    //            [urlString appendString:key];
-    //            [urlString appendString:@"="];
-    //            id value=[params objectForKey:key];
-    //            [urlString appendString:[NSString stringWithFormat:@"%@",value]];
-    //            [urlString appendString:@"&"];
-    //        }
-    //        NSLog(@"请求url:%@",[urlString substringToIndex:urlString.length-1]);
-    //    }
+    if ([self isDebug]) {
+        NSMutableString *urlString=[[NSMutableString alloc] init];
+        if (![url hasPrefix:@"http://"]&&![url hasPrefix:@"https://"]) {
+            [urlString appendString:[self baseUrl]];
+        }
+        [urlString appendString:url];
+        [urlString appendString:@"?"];
+        for (NSString *key in params) {
+            [urlString appendString:key];
+            [urlString appendString:@"="];
+            id value=[params objectForKey:key];
+            [urlString appendString:[NSString stringWithFormat:@"%@",value]];
+            [urlString appendString:@"&"];
+        }
+        MXLog(@"请求url:%@",[urlString substringToIndex:urlString.length-1]);
+    }
     
     return params;
 }
@@ -1100,7 +1089,6 @@ static inline NSString *cachePath() {
     
     manager.requestSerializer.stringEncoding = NSUTF8StringEncoding;
     
-    
     for (NSString *key in sg_httpHeaders.allKeys) {
         if (sg_httpHeaders[key] != nil) {
             [manager.requestSerializer setValue:sg_httpHeaders[key] forHTTPHeaderField:key];
@@ -1120,7 +1108,6 @@ static inline NSString *cachePath() {
      @"image/*"]];
      */
 #pragma clang diagnostic pop
-    
     
     manager.responseSerializer.acceptableContentTypes = [NSSet setWithArray:@[@"application/json",
                                                                               @"text/html",
@@ -1148,6 +1135,5 @@ static inline NSString *cachePath() {
     
     return sg_requestTasks;
 }
-
 
 @end

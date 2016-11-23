@@ -51,6 +51,8 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		1955599C1DE588B7005C90A5 /* MXNetConfig.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MXNetConfig.h; sourceTree = "<group>"; };
+		1955599D1DE5899A005C90A5 /* MXNetWorkTool-prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "MXNetWorkTool-prefix.pch"; sourceTree = "<group>"; };
 		B1411D521DDCB42B0071AD4E /* MXNetWorkTool.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = MXNetWorkTool.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		B1411D561DDCB42B0071AD4E /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		B1411D581DDCB42B0071AD4E /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
@@ -170,6 +172,7 @@
 			isa = PBXGroup;
 			children = (
 				B1411D561DDCB42B0071AD4E /* main.m */,
+				1955599D1DE5899A005C90A5 /* MXNetWorkTool-prefix.pch */,
 			);
 			name = "Supporting Files";
 			sourceTree = "<group>";
@@ -195,9 +198,10 @@
 		B1411D881DDCB46C0071AD4E /* MXNetWorkTool */ = {
 			isa = PBXGroup;
 			children = (
-				B1411D891DDCB46C0071AD4E /* AFNetworking */,
+				1955599C1DE588B7005C90A5 /* MXNetConfig.h */,
 				B1411D971DDCB46C0071AD4E /* MXNetWorkTool.h */,
 				B1411D981DDCB46C0071AD4E /* MXNetWorkTool.m */,
+				B1411D891DDCB46C0071AD4E /* AFNetworking */,
 				B1411D991DDCB46C0071AD4E /* UIKit+AFNetworking */,
 			);
 			path = MXNetWorkTool;
@@ -554,6 +558,8 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				DEVELOPMENT_TEAM = SF37794JEV;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "MXNetWorkTool/MXNetWorkTool-prefix.pch";
 				INFOPLIST_FILE = MXNetWorkTool/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
@@ -567,6 +573,8 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				DEVELOPMENT_TEAM = SF37794JEV;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "MXNetWorkTool/MXNetWorkTool-prefix.pch";
 				INFOPLIST_FILE = MXNetWorkTool/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
