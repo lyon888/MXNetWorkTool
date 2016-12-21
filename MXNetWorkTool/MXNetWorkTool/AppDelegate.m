@@ -17,12 +17,12 @@
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
-    //[MXNetWorkTool updateBaseUrl:ServerHost];//更新BaseUrl
+    [MXNetWorkTool updateBaseUrl:ServerHost];//设置/更新BaseUrl
     [MXNetWorkTool enableInterfaceDebug:YES];//开启或关闭接口打印信息
     [MXNetWorkTool cacheGetRequest:NO shoulCachePost:NO];//设置GET、POST是否取缓存
     [MXNetWorkTool obtainDataFromLocalWhenNetworkUnconnected:NO];//从本地提取数据
-    [MXNetWorkTool configRequestType:kMXRequestTypePlainText
-                        responseType:kMXResponseTypeData
+    [MXNetWorkTool configRequestType:MXRequestTypePlainText
+                        responseType:MXResponseTypeData
                  shouldAutoEncodeUrl:NO
              callbackOnCancelRequest:YES];
     

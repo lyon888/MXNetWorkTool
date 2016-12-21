@@ -14,20 +14,20 @@
 #import "AFNetworking.h"
 #import "AFNetworkActivityIndicatorManager.h"
 #endif
-
+///md5
 #import <CommonCrypto/CommonDigest.h>
 
-static NSString *sg_privateNetworkBaseUrl = nil;
-static BOOL sg_isEnableInterfaceDebug = NO;
-static BOOL sg_shouldAutoEncode = NO;
-static BOOL sg_shouldCallbackOnCancelRequest = YES;
-static BOOL sg_cacheGet = YES;
-static BOOL sg_cachePost = NO;
-static NSDictionary *sg_httpHeaders = nil;
-static NSTimeInterval sg_timeout = 60.0f;
-static BOOL sg_shoulObtainLocalWhenUnconnected = NO;
-static MXNetworkStatus sg_networkStatus = MXNetworkStatusUnknown;
-static NSMutableArray *sg_requestTasks;
+static NSString *mx_privateNetworkBaseUrl = nil;
+static BOOL mx_isEnableInterfaceDebug = NO;
+static BOOL mx_shouldAutoEncode = NO;
+static BOOL mx_shouldCallbackOnCancelRequest = YES;
+static BOOL mx_cacheGet = YES;
+static BOOL mx_cachePost = NO;
+static NSDictionary *mx_httpHeaders = nil;
+static NSTimeInterval mx_timeout = 60.0f;
+static BOOL mx_shoulObtainLocalWhenUnconnected = NO;
+static MXNetworkStatus mx_networkStatus = MXNetworkStatusUnknown;
+static NSMutableArray *mx_requestTasks;
 
 /**
  默认请求类型和响应类型为JSON:需要跟后台统一,如果后台返回的为文本类型
@@ -38,14 +38,14 @@ static NSMutableArray *sg_requestTasks;
  shouldAutoEncodeUrl:(BOOL)shouldAutoEncode
  callbackOnCancelRequest:(BOOL)shouldCallbackOnCancelRequest
  
+ //[self configRequestType:kMXRequestTypePlainText
+ //           responseType:kMXResponseTypeData
+ //    shouldAutoEncodeUrl:NO
+ //callbackOnCancelRequest:YES];
+ 
  */
-static MXResponseType sg_responseType = kMXResponseTypeJSON;
-static MXRequestType  sg_requestType  = kMXRequestTypeJSON;
-
-//[self configRequestType:kMXRequestTypePlainText
-//           responseType:kMXResponseTypeData
-//    shouldAutoEncodeUrl:NO
-//callbackOnCancelRequest:YES];
+static MXResponseType mx_responseType = MXResponseTypeJSON;
+static MXRequestType  mx_requestType  = MXRequestTypeJSON;
 
 @implementation MXNetWorkTool
 
@@ -56,52 +56,52 @@ static inline NSString *cachePath() {
 }
 
 + (MXNetworkStatus )networkStatus {
-    return sg_networkStatus;
+    return mx_networkStatus;
 }
 
 + (void)updateBaseUrl:(NSString *)baseUrl {
-    sg_privateNetworkBaseUrl = baseUrl;
+    mx_privateNetworkBaseUrl = baseUrl;
 }
 
 + (NSString *)baseUrl
 {
-    return sg_privateNetworkBaseUrl;
+    return mx_privateNetworkBaseUrl;
 }
 
 + (void)enableInterfaceDebug:(BOOL)isDebug {
-    sg_isEnableInterfaceDebug = isDebug;
+    mx_isEnableInterfaceDebug = isDebug;
 }
 
 + (BOOL)isDebug {
     
-    return sg_isEnableInterfaceDebug;
+    return mx_isEnableInterfaceDebug;
 }
 
 + (void)configRequestType:(MXRequestType)requestType
              responseType:(MXResponseType)responseType
       shouldAutoEncodeUrl:(BOOL)shouldAutoEncode
   callbackOnCancelRequest:(BOOL)shouldCallbackOnCancelRequest {
-    sg_requestType = requestType;
-    sg_responseType = responseType;
-    sg_shouldAutoEncode = shouldAutoEncode;
-    sg_shouldCallbackOnCancelRequest = shouldCallbackOnCancelRequest;
+    mx_requestType = requestType;
+    mx_responseType = responseType;
+    mx_shouldAutoEncode = shouldAutoEncode;
+    mx_shouldCallbackOnCancelRequest = shouldCallbackOnCancelRequest;
 }
 
 + (void)cacheGetRequest:(BOOL)isCacheGet shoulCachePost:(BOOL)shouldCachePost {
-    sg_cacheGet = isCacheGet;
-    sg_cachePost = shouldCachePost;
+    mx_cacheGet = isCacheGet;
+    mx_cachePost = shouldCachePost;
 }
 
 + (void)obtainDataFromLocalWhenNetworkUnconnected:(BOOL)shouldObtain {
-    sg_shoulObtainLocalWhenUnconnected = shouldObtain;
+    mx_shoulObtainLocalWhenUnconnected = shouldObtain;
 }
 
 + (BOOL)shouldEncode {
-    return sg_shouldAutoEncode;
+    return mx_shouldAutoEncode;
 }
 
 + (void)configCommonHttpHeaders:(NSDictionary *)httpHeaders {
-    sg_httpHeaders = httpHeaders;
+    mx_httpHeaders = httpHeaders;
 }
 
 #pragma mark - Constructor
@@ -182,12 +182,12 @@ static inline NSString *cachePath() {
                              progress:(MXPostProgress)progress
                               success:(MXResponseSuccess)success
                                  fail:(MXResponseFail)fail {
-    // 拼接全局参数
+    //拼接全局参数
     params=[self globalParams:params url:url];
     
     AFHTTPSessionManager *manager = [self manager];
     
-    // 处理传入URL，全称原样返回，不是则拼接返回
+    //处理传入URL，全称原样返回，不是则拼接返回
     NSString *absolute = [self absoluteUrlWithPath:url];
     
     if ([self baseUrl] == nil) {
@@ -197,7 +197,6 @@ static inline NSString *cachePath() {
         }
     } else {
         NSURL *absouluteURL = [NSURL URLWithString:absolute];
-        
         if (absouluteURL == nil) {
             MXLog(@"URLString无效，无法生成URL。可能是URL中有中文，请尝试Encode URL");
             return nil;
@@ -213,9 +212,9 @@ static inline NSString *cachePath() {
     
     if (httpMethod == MXRequestMethodGet) {
         
-        if (sg_cacheGet) {//设置Get方式是否取缓存数据
-            if (sg_shoulObtainLocalWhenUnconnected) {//是否从本地取缓存数据
-                if (sg_networkStatus == MXNetworkStatusNotReachable || sg_networkStatus == MXNetworkStatusUnknown ) {//没有网络时
+        if (mx_cacheGet) {//设置Get方式是否取缓存数据
+            if (mx_shoulObtainLocalWhenUnconnected) {//是否从本地取缓存数据
+                if (mx_networkStatus == MXNetworkStatusNotReachable || mx_networkStatus == MXNetworkStatusUnknown ) {//没有网络时
                     id response = [MXNetWorkTool cahceResponseWithURL:absolute
                                                            parameters:params];
                     if (response) {
@@ -257,7 +256,7 @@ static inline NSString *cachePath() {
         } success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
             [self successResponse:responseObject callback:success];
             
-            if (sg_cacheGet) {
+            if (mx_cacheGet) {
                 [self cacheResponseObject:responseObject request:task.currentRequest parameters:params];
             }
             
@@ -271,7 +270,7 @@ static inline NSString *cachePath() {
         } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
             [[self allTasks] removeObject:task];
             
-            if ([error code] < 0 && sg_cacheGet) {// 获取缓存
+            if ([error code] < 0 && mx_cacheGet) {// 获取缓存
                 id response = [MXNetWorkTool cahceResponseWithURL:absolute
                                                        parameters:params];
                 if (response) {
@@ -301,41 +300,41 @@ static inline NSString *cachePath() {
         }];
         
     } else if (httpMethod == MXRequestMethodPost) {//POST请求
-        if (sg_cachePost) {// 获取缓存
-            if (sg_shoulObtainLocalWhenUnconnected) {
-                if (sg_networkStatus == MXNetworkStatusNotReachable ||  sg_networkStatus == MXNetworkStatusUnknown ) {
-                    //                            id response = [HYBNetworking cahceResponseWithURL:absolute
-                    //                                                                   parameters:params];
-                    //                            if (response) {
-                    //                                if (success) {
-                    //                                    [self successResponse:response callback:success];
-                    //
-                    //                                    if ([self isDebug]) {
-                    //                                        [self logWithSuccessResponse:response
-                    //                                                                 url:absolute
-                    //                                                              params:params];
-                    //                                    }
-                    //                                }
-                    //                                return nil;
-                    //                            }
+        if (mx_cachePost) {// 获取缓存
+            if (mx_shoulObtainLocalWhenUnconnected) {
+                if (mx_networkStatus == MXNetworkStatusNotReachable ||  mx_networkStatus == MXNetworkStatusUnknown ) {
+                    id response = [MXNetWorkTool cahceResponseWithURL:absolute
+                                                           parameters:params];
+                    if (response) {
+                        if (success) {
+                            [self successResponse:response callback:success];
+                            
+                            if ([self isDebug]) {
+                                [self logWithSuccessResponse:response
+                                                         url:absolute
+                                                      params:params];
+                            }
+                        }
+                        return nil;
+                    }
                 }
             }
             
             if (!refreshCache) {
-                //                        id response = [HYBNetworking cahceResponseWithURL:absolute
-                //                                                               parameters:params];
-                //                        if (response) {
-                //                            if (success) {
-                //                                [self successResponse:response callback:success];
-                //
-                //                                if ([self isDebug]) {
-                //                                    [self logWithSuccessResponse:response
-                //                                                             url:absolute
-                //                                                          params:params];
-                //                                }
-                //                            }
-                //                            return nil;
-                //                        }
+                id response = [MXNetWorkTool cahceResponseWithURL:absolute
+                                                       parameters:params];
+                if (response) {
+                    if (success) {
+                        [self successResponse:response callback:success];
+                        
+                        if ([self isDebug]) {
+                            [self logWithSuccessResponse:response
+                                                     url:absolute
+                                                  params:params];
+                        }
+                    }
+                    return nil;
+                }
             }
         }
         
@@ -347,7 +346,7 @@ static inline NSString *cachePath() {
             
             [self successResponse:responseObject callback:success];
             
-            if (sg_cachePost) {
+            if (mx_cachePost) {
                 [self cacheResponseObject:responseObject request:task.currentRequest  parameters:params];
             }
             
@@ -361,7 +360,7 @@ static inline NSString *cachePath() {
         } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
             [[self allTasks] removeObject:task];
             
-            if ([error code] < 0 && sg_cachePost) {// 获取缓存
+            if ([error code] < 0 && mx_cachePost) {// 获取缓存
                 id response = [MXNetWorkTool cahceResponseWithURL:absolute
                                                        parameters:params];
                 
@@ -481,7 +480,7 @@ static inline NSString *cachePath() {
     return session;
 }
 
-+ (MXURLSessionTask *)uploadWithImages:(NSDictionary *)images
++ (MXURLSessionTask *)uploadWithImages:(NSDictionary *)imageDict
                                    url:(NSString *)url
                               mimeType:(NSString *)mimeType
                             parameters:(NSMutableDictionary *)params
@@ -520,9 +519,9 @@ static inline NSString *cachePath() {
         
         NSString *imageFileName = nil;
         
-        for (NSString *key in [images allKeys]) {
+        for (NSString *key in [imageDict allKeys]) {
             
-            UIImage *image = images[key];
+            UIImage *image = imageDict[key];
             
             if (!image) {
                 MXLog(@"图片不存在");
@@ -752,8 +751,6 @@ static inline NSString *cachePath() {
     return cacheData;
 }
 
-
-
 // 将经过json处理的数据传到外部
 + (void)successResponse:(id)responseData callback:(MXResponseSuccess)success
 {
@@ -776,21 +773,17 @@ static inline NSString *cachePath() {
         } else {
             NSError *error = nil;
             NSDictionary *response = [NSJSONSerialization JSONObjectWithData:responseData options:NSJSONReadingMutableContainers error:&error];
-            
-            
-            
-            if (error != nil) {
-                MXLog(@"转换JSON数据错误");
-                return responseData;
+            if (error) {
+                NSString *responseString = [[NSString alloc] initWithData:responseData encoding:(NSUTF8StringEncoding)];
+                MXLog(@"JSON数据转换错误,尝试转换为字符串。错误(ERROR)输出:=======>%@\n字符串数据:============>%@",error,responseString);
+                return responseString;
             } else {
-                
-                //#warning 换书吧自定义
+                //#warning 自定义
                 //          //19901 - 19999 范围内要求弹框
                 //          NSInteger code=[[response objectForKey:kResponseCode]integerValue];
                 //          if (19901<=code && code<=19999) {
                 //              [[NSNotificationCenter defaultCenter] postNotificationName:kProhibitNotification object:response];
                 //          }
-                
                 return response;
             }
         }
@@ -805,13 +798,13 @@ static inline NSString *cachePath() {
     
     if ([error code] == NSURLErrorCancelled)
     {
-        if (sg_shouldCallbackOnCancelRequest) {
+        if (mx_shouldCallbackOnCancelRequest) {
             if (fail) {
                 fail(error);
             }
         }
     }
-#warning 换书吧自定义
+#warning 自定义
     //        else if ([error code] == NSURLErrorCannotConnectToHost)
     //        {
     //            if (fail) {
@@ -1055,12 +1048,12 @@ static inline NSString *cachePath() {
         manager = [AFHTTPSessionManager manager];
     }
     
-    switch (sg_requestType) {
-        case kMXRequestTypeJSON: {
+    switch (mx_requestType) {
+        case MXRequestTypeJSON: {
             manager.requestSerializer = [AFJSONRequestSerializer serializer];
             break;
         }
-        case kMXRequestTypePlainText: {
+        case MXRequestTypePlainText: {
             manager.requestSerializer = [AFHTTPRequestSerializer serializer];
             break;
         }
@@ -1069,16 +1062,16 @@ static inline NSString *cachePath() {
         }
     }
     
-    switch (sg_responseType) {
-        case kMXResponseTypeJSON: {
+    switch (mx_responseType) {
+        case MXResponseTypeJSON: {
             manager.responseSerializer = [AFJSONResponseSerializer serializer];
             break;
         }
-        case kMXResponseTypeXML: {
+        case MXResponseTypeXML: {
             manager.responseSerializer = [AFXMLParserResponseSerializer serializer];
             break;
         }
-        case kMXResponseTypeData: {
+        case MXResponseTypeData: {
             manager.responseSerializer = [AFHTTPResponseSerializer serializer];
             break;
         }
@@ -1089,9 +1082,9 @@ static inline NSString *cachePath() {
     
     manager.requestSerializer.stringEncoding = NSUTF8StringEncoding;
     
-    for (NSString *key in sg_httpHeaders.allKeys) {
-        if (sg_httpHeaders[key] != nil) {
-            [manager.requestSerializer setValue:sg_httpHeaders[key] forHTTPHeaderField:key];
+    for (NSString *key in mx_httpHeaders.allKeys) {
+        if (mx_httpHeaders[key] != nil) {
+            [manager.requestSerializer setValue:mx_httpHeaders[key] forHTTPHeaderField:key];
         }
     }
     
@@ -1114,26 +1107,26 @@ static inline NSString *cachePath() {
                                                                               @"text/json",
                                                                               @"text/javascript"]];
     
-    manager.requestSerializer.timeoutInterval = sg_timeout;
+    manager.requestSerializer.timeoutInterval = mx_timeout;
     
     // 设置允许同时最大并发数量，过大容易出问题
     manager.operationQueue.maxConcurrentOperationCount = 3;
     
-    //    if (sg_shoulObtainLocalWhenUnconnected && (sg_cacheGet || sg_cachePost ) ) {
-    //        [self detectNetwork];
-    //    }
+    if (mx_shoulObtainLocalWhenUnconnected && (mx_cacheGet || mx_cachePost ) ) {
+    //   [self detectNetwork];
+    }
     return manager;
 }
 
 + (NSMutableArray *)allTasks {
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
-        if (sg_requestTasks == nil) {
-            sg_requestTasks = [[NSMutableArray alloc] init];
+        if (mx_requestTasks == nil) {
+            mx_requestTasks = [[NSMutableArray alloc] init];
         }
     });
     
-    return sg_requestTasks;
+    return mx_requestTasks;
 }
 
 @end

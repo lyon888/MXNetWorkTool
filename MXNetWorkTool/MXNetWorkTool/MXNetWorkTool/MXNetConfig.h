@@ -8,17 +8,17 @@
 #define kVersionId          @"14"
 
 //本地接口:
-//#define ServerHost              @"http://vtcr2mcex6.proxy.qqbrowser.cc/zhihuisuo"
-//#define ServerUploadImgHost     @"http://vtcr2mcex6.proxy.qqbrowser.cc/zhihuisuo"
+//#define ServerHost
+//#define ServerUploadImgHost
 
 //测试接口:
-//#define ServerHost            @"http://2421cbb4.ngrok.io/zhihuisuo"
-//#define ServerUploadImgHost   @"http://2421cbb4.ngrok.io/zhihuisuo"
+//#define ServerHost
+//#define ServerUploadImgHost
 
 //服务器普通接口
-#define ServerHost            @"http://test7.messcat.com/zhihuisuo"
+#define ServerHost @""
 //服务器图片上传接口
-#define ServerUploadImgHost   @"http://test7.messcat.com/zhihuisuo"
+#define ServerUploadImgHost @""
 
 
 #define RequestAPI(__api)           [NSString stringWithFormat:@"%@%@",ServerHost,__api]
@@ -30,7 +30,7 @@
 #define kResponseResultList     @"resultList"
 
 
-#define kUrlLogin                       @"/member/app/login"                //2.1.4登陆
+#define kUrlLogin                       @""                
 
 
 #endif /* MXNetConfig_h */

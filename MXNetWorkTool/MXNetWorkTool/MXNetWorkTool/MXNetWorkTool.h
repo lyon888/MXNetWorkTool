@@ -35,14 +35,14 @@ typedef NS_ENUM(NSUInteger, MXNetworkStatus) {
 };
 
 typedef NS_ENUM(NSUInteger, MXResponseType) {
-    kMXResponseTypeJSON = 1, // 默认
-    kMXResponseTypeXML  = 2, // XML
-    kMXResponseTypeData = 3  // 特殊情况下，一转换服务器就无法识别的，默认会尝试转换成JSON，若失败则需要自己去转换
+    MXResponseTypeJSON = 1, // 默认
+    MXResponseTypeXML  = 2, // XML
+    MXResponseTypeData = 3  // 特殊情况下，一转换服务器就无法识别的，默认会尝试转换成JSON，若失败则需要自己去转换
 };
 
 typedef NS_ENUM(NSUInteger, MXRequestType) {
-    kMXRequestTypeJSON = 1,         // 默认
-    kMXRequestTypePlainText  = 2    // 普通text/html
+    MXRequestTypeJSON = 1,         // 默认
+    MXRequestTypePlainText  = 2    // 普通text/html
 };
 
 /**
@@ -220,7 +220,6 @@ typedef NSURLSessionTask MXURLSessionTask;
                                  fail:(MXResponseFail)fail;
 
 /**
- @author 刘智援, 16-10-19 00:01:40
  
  图片(多张)上传接口，若不指定baseurl，可传完整的url
  
@@ -237,7 +236,7 @@ typedef NSURLSessionTask MXURLSessionTask;
  
  @return MXURLSessionTask
  */
-+ (MXURLSessionTask *)uploadWithImages:(NSDictionary *)images
++ (MXURLSessionTask *)uploadWithImages:(NSDictionary *)imageDict
                                    url:(NSString *)url
                               mimeType:(NSString *)mimeType
                             parameters:(NSMutableDictionary *)params
